@@ -12,7 +12,6 @@ data class Characters(
     val name_kanji: String?,
     val about: String,
     val images: ImageWrapper,
-    val anime: List<AnimeAppearence>?
 )
 
 data class ImageWrapper(
@@ -23,10 +22,3 @@ data class Jpg(
     val image_url: String
 )
 
-data class AnimeAppearence(
-    val anime: AnimeInfo
-)
-
-data class AnimeInfo(
-    val title: String
-)

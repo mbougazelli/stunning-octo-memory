@@ -1,5 +1,6 @@
 package com.example.animecharacters.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.content.MediaType.Companion.Text
 import androidx.compose.foundation.layout.Column
@@ -21,19 +22,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.animecharacters.navigation.Screen
+import androidx.core.graphics.toColorInt
 
 @Composable
 fun CharacterGrid(navController: NavController, viewModel: CharacterViewModel = hiltViewModel()) {
     val characters = viewModel.characterList
 
 
-    LazyVerticalGrid(columns = GridCells.Fixed(3), contentPadding = PaddingValues(8.dp)) {
+    LazyVerticalGrid(
+        modifier = Modifier.background(Color("#82B1FF".toColorInt())),
+        columns = GridCells.Fixed(3),
+        contentPadding = PaddingValues(8.dp)
+    ) {
         items(characters) { character ->
             Card(
                 modifier = Modifier
@@ -44,7 +51,7 @@ fun CharacterGrid(navController: NavController, viewModel: CharacterViewModel = 
                     },
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.background(Color("#BBDEFB".toColorInt()))) {
                     AsyncImage(
                         model = character.images.jpg.image_url,
                         contentDescription = character.name,
@@ -71,6 +78,7 @@ fun CharacterDetailScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color("#BBDEFB".toColorInt()))
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -92,17 +100,6 @@ fun CharacterDetailScreen(
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Anime Appearances:",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-            it.anime?.forEach { anime ->
-                Text(text = "• ${anime.anime.title}")
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             it.about?.let { aboutText ->
                 Text(
