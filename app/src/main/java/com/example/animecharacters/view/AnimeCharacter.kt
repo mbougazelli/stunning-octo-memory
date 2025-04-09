@@ -141,7 +141,7 @@ fun CharacterDetailScreen(
                     model = it.images.jpg.image_url,
                     contentDescription = it.name,
                     modifier = Modifier
-                        .height(250.dp)
+                        .height(300.dp)
                         .fillMaxWidth(),
                     contentScale = ContentScale.Crop
                 )
