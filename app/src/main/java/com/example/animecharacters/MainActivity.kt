@@ -41,7 +41,9 @@ class MainActivity : ComponentActivity() {
                 ) { backStackEntry ->
                     val characterId = backStackEntry.arguments?.getInt("characterId")
                     characterId?.let {
-                        CharacterDetailScreen(characterId = it)
+                        CharacterDetailScreen(
+                            characterId = it,
+                            navController = navController)
                     }
                 }
             }

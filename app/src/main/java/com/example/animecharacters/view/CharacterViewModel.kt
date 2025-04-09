@@ -22,17 +22,23 @@ class CharacterViewModel @Inject constructor(
     var characterList by mutableStateOf<List<Characters>>(emptyList())
         private set
 
+    var isLoading by mutableStateOf(true)
+        private set
+
     init {
         fetchCharacters()
     }
 
     private fun fetchCharacters() {
         viewModelScope.launch {
+            isLoading = true
             try {
                 val response = RetrofitInstance.api.getCharacters()
                 characterList = response.data
             } catch (e: Exception) {
                 Log.e("CharacterViewModel", "Error: ${e.message}")
+            } finally {
+                isLoading = false
             }
         }
     }
