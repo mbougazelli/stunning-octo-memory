@@ -1,5 +1,6 @@
 package com.example.animecharacters.view
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -32,12 +33,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.animecharacters.navigation.Screen
 import androidx.core.graphics.toColorInt
+import com.example.animecharacters.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,6 +54,16 @@ fun CharacterGrid(navController: NavController, viewModel: CharacterViewModel = 
                 colors = TopAppBarDefaults.topAppBarColors(Color("#82B1FF".toColorInt())),
                 title = { Text("Anime Characters") }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+                Log.d("FAB", "FAB clicked")
+            }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_email),
+                    contentDescription = "Email"
+                )
+            }
         }
     ) { innerPadding ->
         if (isLoading) {
