@@ -1,16 +1,15 @@
 package com.example.animecharacters.view
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -54,7 +53,15 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.animecharacters.R
 import com.example.animecharacters.navigation.Screen
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
 
+@SuppressLint("QueryPermissionsNeeded")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CharacterGrid(navController: NavController, viewModel: CharacterViewModel = hiltViewModel()) {
@@ -142,7 +149,14 @@ fun CharacterGrid(navController: NavController, viewModel: CharacterViewModel = 
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            // This Box will take up 80% of screen height
+            val emailViewModel: EmailViewModel = hiltViewModel()
+            val context = LocalContext.current
+
+            val subject by emailViewModel.subject.collectAsState()
+            val recipient by emailViewModel.recipient.collectAsState()
+            val body by emailViewModel.body.collectAsState()
+            val isFormValid by emailViewModel.isFormValid.collectAsState()
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -153,10 +167,61 @@ fun CharacterGrid(navController: NavController, viewModel: CharacterViewModel = 
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("This is a modal bottom sheet!", style = MaterialTheme.typography.titleLarge)
+                    Text("Send FeedBack", style = MaterialTheme.typography.titleLarge)
                     Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = { isSheetOpen = false }) {
-                        Text("Close")
+
+                    // Recipient Field
+                    OutlinedTextField(
+                        value = recipient,
+                        onValueChange = { emailViewModel.updateRecipient(it) },
+                        label = { Text("Recipient") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Subject Field
+                    OutlinedTextField(
+                        value = subject,
+                        onValueChange = { emailViewModel.updateSubject(it) },
+                        label = { Text("Subject") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Message Field
+                    OutlinedTextField(
+                        value = body,
+                        onValueChange = { emailViewModel.updateBody(it) },
+                        label = { Text("Message Body") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f, fill = false)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        enabled = isFormValid,
+                        onClick = {
+                            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                                data = "mailto:".toUri()
+                                putExtra(Intent.EXTRA_EMAIL, recipient)
+                                putExtra(Intent.EXTRA_SUBJECT, subject)
+                                putExtra(Intent.EXTRA_TEXT, body)
+                            }
+
+                            if (intent.resolveActivity(context.packageManager) != null) {
+                                context.startActivity(intent)
+                                Toast.makeText(context, "Email intent launched!", Toast.LENGTH_SHORT).show()
+                                emailViewModel.clearFields() // Clear ONLY after successful submission
+                            } else {
+                                Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    ) {
+                        Text("Submit")
                     }
                 }
             }
